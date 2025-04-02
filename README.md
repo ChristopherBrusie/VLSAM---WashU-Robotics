@@ -1,6 +1,6 @@
 # VSLAM - WashU Robotics
-## Integration of Visual Slam with ArduCopter for Quadrotor Perception and Navigation
-##### A Guide for Integrating ArduCopter with RTAB-Map and ROS2 Using Intel Realsense and NVIDIA Jetson Orin Nano
+## Integration of Visual Slam with ArduPilot for Quadrotor Perception and Navigation
+##### A Guide for Integrating ArduPilot with RTAB-Map and ROS2 Using Intel Realsense and NVIDIA Jetson Orin Nano
 By WashU Robotics
 
 ## Hardware Requirements
