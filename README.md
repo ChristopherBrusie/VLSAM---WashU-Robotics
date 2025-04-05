@@ -24,7 +24,7 @@ By Chris Brusie - WashU Robotics
 | GND   | GND (pin 6)   |
 - In addition, I've connected the Jetson and flight controller via USB. 
 
-## Realsense SDK2.0 and ROS Wrapper
+## 1. Realsense SDK2.0 and ROS Wrapper
 #### Build RealSense SDK2.0 for JP6.2
 > Note: Realsense SDK2.0 does not officially support Jetpack 6.2. Below is a workaround.
  Credit goes to @GoPro1147 from [this issue](https://github.com/IntelRealSense/librealsense/issues/13713) for the following patch. 
@@ -55,7 +55,7 @@ ros2 launch realsense2_camera rs_launch.py depth_module.depth_profile:=1280x720x
 rviz2
 ```
 - Visalize depth cloud topics. 
-## RTABMAP_ROS
+## 2. RTABMAP_ROS
 #### Install RTAB-Map-ROS
 - Follow [this guide](https://github.com/introlab/rtabmap_ros/tree/ros2?tab=readme-ov-file#rtabmap_ros) to install RTAB-Map ROS **from source**. 
 - Colcon build fails on realsense2_camera_msgs package
@@ -90,7 +90,7 @@ sudo apt-get install ros-humble-octomap*
     - Find `FAN_DEFAULT_PROFILE` (near bottom), change from `quiet` to `cool`
     - Change takes effect on next reboot
 
-## ArduPilot DDS Setup
+## 3. ArduPilot DDS Setup
 #### Set up the ArduPilot Build Environment
 - If not already done, install Git:
 ```sh
@@ -149,7 +149,7 @@ cd ~/ardupilot
 - replace `MatekH743-bdshot` with your board name. 
 
 
-## ArduPilot Communication Parameters
+## 4. ArduPilot Communication Parameters
 > Note: ArduPilot parameters can be set using MAVProxy on the Jetson, or using Mission Planner on a Windows machine. This example will use Mission Planner, but either method will work. 
 
 #### Serial Port Parameters
@@ -178,7 +178,7 @@ Verify that the connection is stable by viewing the contents of a topic:
 ```sh
 ros2 topic echo /ap/time
 ```
-## Odometry Setup
+## 5. Odometry Setup
 This section is about taking the dynamic transformation from `odom` frame to `camera_link` frame provided by RTAB-Map odometry, and computing the transformation from `odom` frame to `base_link` frame.
 - `transform_pkg` includes a node which computes a static transformation between `base_link` and `camera_link`. 
     - This transformation is the spatial relationship between the camera and flight controller on the quadcopter. 
@@ -214,7 +214,23 @@ VISO_TYPE, 1 (enable visual odometry)
 ARMING_CHECK, 388598 (make sure visOdom health is checked)
 ```
 
-
-
-
+## 6. Run
+- launch MAVProxy over USB (set the destination IP to your Windows PC address)
+```sh
+mavproxy.py --master=/dev/ttyACM* --out=udp:172.27.51.230:14550
+```
+- launch RTAB-Map
+```sh
+cd ~/ros2_ws/src/rtabmap_ros/rtabmap_examples/launch
+ros2 launch realsense_d435i_stereo_real.launch.py
+```
+- launch the Micro-ROS agent over serial
+```sh
+cd ~/ros2_ws
+ros2 run micro_ros_agent micro_ros_agent serial -b 2000000 -D /dev/ttyTHS1
+```
+- relay `/tf` to `/ap/tf`
+```sh
+ros2 run topic_tools relay /tf /ap/tf
+```
 
